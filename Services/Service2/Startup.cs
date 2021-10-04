@@ -1,3 +1,6 @@
+using EventBus.Messages.Common;
+using EventBus.Messages.Events;
+using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -6,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Service2.EventBusConsumer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +29,23 @@ namespace Service2
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //MassTransit configuration is created hear. -----------------
+            services.AddMassTransit(config =>
+            {
+                config.AddConsumer<EventOneConsumer>();
+
+                config.UsingRabbitMq((ctx, cfg) =>
+                {
+                    cfg.Host(Configuration["EventBussSetting:HostAddress"]);
+
+                    cfg.ReceiveEndpoint(EventBusConstants.BasketCheckoutQueue, c => {
+                        c.ConfigureConsumer<EventOneConsumer>(ctx);
+                    });
+                });
+            });
+            services.AddMassTransitHostedService();
+            services.AddScoped<EventOneConsumer>();
+            //-----------------------------------------------------------
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
