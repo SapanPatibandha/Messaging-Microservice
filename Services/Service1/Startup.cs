@@ -1,3 +1,4 @@
+using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -25,6 +26,16 @@ namespace Service1
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //MassTransit configuration is created hear. -----------------
+            services.AddMassTransit(config =>
+            {
+                config.UsingRabbitMq((ctx, cfg) =>
+                {
+                    cfg.Host(Configuration["EventBussSetting:HostAddress"]);
+                });
+            });
+            services.AddMassTransitHostedService();
+            //-----------------------------------------------------------
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

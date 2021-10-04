@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using EventBus.Messages.Events;
+using MassTransit;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -11,21 +13,38 @@ namespace Service1.Controllers
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
     {
+        private readonly IPublishEndpoint _publishEndpoint;
+        private readonly ILogger<WeatherForecastController> _logger;
+
+        public WeatherForecastController(
+            IPublishEndpoint publishEndpoint, 
+            ILogger<WeatherForecastController> logger)
+        {
+            _publishEndpoint = publishEndpoint;
+            _logger = logger;
+        }
+
         private static readonly string[] Summaries = new[]
         {
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
 
-        private readonly ILogger<WeatherForecastController> _logger;
-
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
-        {
-            _logger = logger;
-        }
 
         [HttpGet]
         public IEnumerable<WeatherForecast> Get()
         {
+            //------------------------------------------------------------------
+            // ---- Send message from hear to RabbitMQ. 
+            var eventMsg = new EventOne()
+            {
+                EventName = "TestEvet",
+                Message = $"This is test message from service 1: {DateTime.Now.Ticks}",
+                ReferenceID = DateTime.Now.Ticks
+            };
+            _publishEndpoint.Publish(eventMsg);
+
+            //------------------------------------------------------------------
+
             var rng = new Random();
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
