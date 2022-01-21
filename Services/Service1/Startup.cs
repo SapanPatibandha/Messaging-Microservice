@@ -34,6 +34,7 @@ namespace Service1
                 {
                     cfg.Host(Configuration["EventBussSetting:HostAddress"]);
 
+                    #region MyRegion
                     //-----------------------------------------------------------------
                     //cfg.Host("localhost", 5672, "vhost", h =>
                     //  {
@@ -51,6 +52,8 @@ namespace Service1
                     //    h.Password("password");
                     //});
                     //-----------------------------------------------------------------
+
+                    #endregion
                 });
             });
             services.AddMassTransitHostedService();
