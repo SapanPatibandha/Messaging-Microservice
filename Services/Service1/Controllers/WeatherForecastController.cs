@@ -2,6 +2,7 @@
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Service1.EventBusConsumer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,6 +43,7 @@ namespace Service1.Controllers
                 ReferenceID = DateTime.Now.Ticks
             };
             _publishEndpoint.Publish(eventMsg);
+            //_publishEndpoint.Publish<EventOne>(eventMsg);
 
             //------------------------------------------------------------------
 

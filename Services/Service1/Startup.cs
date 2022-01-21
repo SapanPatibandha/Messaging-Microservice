@@ -10,6 +10,7 @@ using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Authentication;
 using System.Threading.Tasks;
 
 namespace Service1
@@ -32,6 +33,24 @@ namespace Service1
                 config.UsingRabbitMq((ctx, cfg) =>
                 {
                     cfg.Host(Configuration["EventBussSetting:HostAddress"]);
+
+                    //-----------------------------------------------------------------
+                    //cfg.Host("localhost", 5672, "vhost", h =>
+                    //  {
+                    //      h.Username("username");
+                    //      h.Password("password");
+                    //      h.UseSsl(s =>
+                    //      {
+                    //          s.Protocol = SslProtocols.Ssl2;
+                    //      });
+                    //  });
+                    //-----------------------------------------------------------------
+                    //cfg.Host(new Uri("amqps://b-12345678-1234-1234-1234-123456789012.mq.us-east-2.amazonaws.com:5671"), h =>
+                    //{
+                    //    h.Username("username");
+                    //    h.Password("password");
+                    //});
+                    //-----------------------------------------------------------------
                 });
             });
             services.AddMassTransitHostedService();
