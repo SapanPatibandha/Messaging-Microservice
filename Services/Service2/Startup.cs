@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Service2.EventBusConsumer;
+using Service2.Observer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,7 +41,21 @@ namespace Service2
 
                     cfg.ReceiveEndpoint(EventBusConstants.BasketCheckoutQueue, c => {
                         c.ConfigureConsumer<EventOneConsumer>(ctx);
+                        //c.ConfigureConsumer<EventOneConsumerFault>(ctx);
+                        //c.UseMessageRetry(r =>
+                        //{
+                        //    r.Handle<ArgumentNullException>();
+                        //    r.Ignore(typeof(InvalidOperationException), typeof(InvalidCastException));
+                        //    r.Ignore<ArgumentException>(t => t.ParamName == "orderTotal");
+                        //});
                     });
+
+
+                    cfg.ConnectBusObserver(new BusObserver());
+                    cfg.ConnectReceiveObserver(new ReceiveObserver());
+                    cfg.ConnectConsumeObserver(new ConsumeObserver());
+                    //cfg.ConnectSendObserver(new SendObserver());
+                    //cfg.ConnectPublishObserver(new PublishObserver());
                 });
             });
             services.AddMassTransitHostedService();

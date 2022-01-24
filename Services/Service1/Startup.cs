@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Service1.Observer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,6 +55,13 @@ namespace Service1
                     //-----------------------------------------------------------------
 
                     #endregion
+
+                    cfg.ConnectBusObserver(new BusObserver());
+                    //cfg.ConnectReceiveObserver(new ReceiveObserver());
+                    //cfg.ConnectConsumeObserver(new ConsumeObserver());
+                    cfg.ConnectSendObserver(new SendObserver());
+                    cfg.ConnectPublishObserver(new PublishObserver());
+
                 });
             });
             services.AddMassTransitHostedService();
